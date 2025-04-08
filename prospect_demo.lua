@@ -14,32 +14,14 @@ function upOrErr(dist)
         if not turtle.up() then
             error("Cannot move inside move or die function: upOrErr()")
         end
-        turtle.y = turtle.y + 1
     end
 end
 
-function downOrErr(dist)
-    for i=1,dist,1 do
-        if not turtle.down() then
-            error("Cannot move inside move or die function: downOrErr()")
-        end
-        turtle.y = turtle.y - 1
-    end
-end
 
 function fwdOrErr(dist)
     for i=1,dist,1 do
         if not turtle.forward() then
             error("Cannot move inside move or die function: fwdOrErr()")
-        end
-        if turtle.facing == 0 then
-            turtle.z = turtle.z + 1
-        elseif turtle.facing == 1 then
-            turtle.x = turtle.x + 1
-        elseif turtle.facing == 2 then
-            turtle.z = turtle.z - 1
-        else
-            turtle.x = turtle.x - 1
         end
     end
 end
@@ -55,7 +37,7 @@ function sendToServer(x, y)
 	end
 	-- Create the POST data
 	local post_data = {
-	  probe_name = "TESTBED",
+	  probe_name = "TESTBED3",
 	  chunk_x = x,
 	  chunk_y = y,
 	  block_counts = chunk_data
@@ -80,6 +62,7 @@ function sendToServer(x, y)
 	end
 end
 
+-- TODO just go up to the world height.
 upOrErr(200)
 x = 0
 y = 0
@@ -87,22 +70,25 @@ sendToServer(x,y)
 move_chunks = 1
 facing = 0 -- Forward in Y direction
 while true do
-	facing = math.fmod(facing + 1, 4)
-	for i=1,move_chunks,1 do
-		fwdOrErr(16)
-		if facing == 0 then
-			y = y + 1
-		elseif facing = 1 then
-			x = x + 1
-		elseif facing = 2 then
-			y = y - 1
-		elseif facing = 3 then
-			x = x - 1
-		else
-			error("Invalid facing: " .. facing)
+	for i=1,2,1 do
+		for j=1,move_chunks,1 do
+			fwdOrErr(16)
+			if facing == 0 then
+				y = y + 1
+			elseif facing == 1 then
+				x = x + 1
+			elseif facing == 2 then
+				y = y - 1
+			elseif facing == 3 then
+				x = x - 1
+			else
+				error("Invalid facing: " .. facing)
+			end
+			sendToServer(x,y)
 		end
-		sendToServer(x,y)
 		turtle.turnRight()
+		facing = math.fmod(facing + 1, 4)
 	end
 	move_chunks = move_chunks + 1
+	
 end
